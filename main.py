@@ -1,6 +1,14 @@
-from datetime import datetime
+from google_sheets import find_class
 
-today = datetime.now()
-print("Teaching Assistant Starting...")
-print(f"Todays date is {today.strftime('%A, %B %D, %Y')}")
-print("test")
+def main():
+    class_info = find_class("C2")
+
+    print("Teaching Assistant")
+    print("------------------")
+
+    print(f"Class: {class_info['Class']}")
+    print(f"Current Slide: {class_info['Current Slide']}")
+    print(f"Next Class: {class_info['Days']} at {class_info['Time']}")
+
+if __name__ == "__main__":
+    main()
