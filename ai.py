@@ -22,7 +22,7 @@ def ask_ai(prompt):
 
     return response.choices[0].message.content
 
-# Test
-answer = ask_ai("Create a one sentence motivation message for a teacher")
-print(answer)
+# # Test
+# answer = ask_ai("Create a one sentence motivation message for a teacher")
+# print(answer)
 
