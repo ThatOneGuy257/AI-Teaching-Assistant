@@ -27,6 +27,10 @@ from google.oauth2.service_account import Credentials
 
 
 def get_classes():
+    sheet = get_sheet()
+    return sheet.get_all_records()
+
+def get_sheet():
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive"
@@ -41,8 +45,7 @@ def get_classes():
 
     spreadsheet = client.open("Teaching Assistant Database")
     sheet = spreadsheet.worksheet("Classes")
-
-    return sheet.get_all_records()
+    return sheet
 
 def find_class(class_name):
     classes = get_classes()
@@ -53,10 +56,23 @@ def find_class(class_name):
         
     return None
 
-# #Test it
-# my_class = find_class("C2")
+def update_slides(class_name, slide):
+    classes = get_classes()
+    for index, class_info in enumerate(classes):
+        if class_info["Class"] == class_name:
+            class_row = index + 2
+            sheet = get_sheet()
+            old_slide = class_info["Current Slide"]
+            sheet.update_cell(class_row, 4, slide)
+            return {
+                "success": True,
+                "old_slide": old_slide,
+                "new_slide": slide
+            }
 
-# print(my_class)
+    
+    return False
+    
 
 
 
