@@ -57,6 +57,7 @@ def find_class(class_name):
     return None
 
 def update_slides(class_name, slide):
+    print("Updating . . .")
     classes = get_classes()
     for index, class_info in enumerate(classes):
         if class_info["Class"] == class_name:

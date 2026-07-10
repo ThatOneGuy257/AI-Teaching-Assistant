@@ -1,5 +1,6 @@
 from google_sheets import find_class, update_slides
 from ai import ask_ai
+from google_docs import write_document
 
 
 def create_teaching_brief(class_name):
@@ -30,47 +31,64 @@ def create_teaching_brief(class_name):
     print("\nGenerating teaching brief . . .\n")
 
     response = ask_ai(prompt)
-    print(response)
+    return response
+    # print(response)
 
 def handle_command(command):
-    command = command.strip()
-    if command.lower() == "help":
-        print("""
-              Available Commands:
-
-              Brief C2/C4
-              Update C2/C4 *Slide Number*
-              Help
-              Quit
-              """)
+    COMMANDS = {
+        "help": handle_help,
+        "brief": handle_brief,
+        "update": handle_update
+    }
+    parts = command.strip().split()
+    if not parts:
         return
-    
-    parts = command.split()
+    command_name = parts[0].lower()
 
-    if len(parts) == 2 and parts[0].lower() == "brief":
-        
-        create_teaching_brief(parts[1].upper())
+    handler = COMMANDS.get(command_name)
+    if handler is None:
+        print("Unkown command, please type 'help' to see possible commands")
         return
+    handler(parts)
+
     
-    if len(parts) == 3 and parts[0].lower() == "update":
-        try:
-            slide = int(parts[2])
-        except ValueError:
-            print("Slide number must be a whole number")
-            return
-        result = update_slides(parts[1].upper(), slide) 
-        if result["success"]:
-            print(f"Updated {parts[1].upper()}")
-            print(f"Previous Slide: {result['old_slide']}")
-            print(f"New slide: {result["new_slide"]}")
-            return
-        else:
-            print("Command not found")
-            return
-    print("Unknown Command. Type 'help' to see available commands.")
+def handle_help(parts):
+    print("""
+          Available Commands:
+          Brief C2/C4
+          Update C2/C4 <Slide Number>
+          Help
+          Quit
+          """)
+    return
 
+def handle_brief(parts):
+    if len(parts) != 2:
+        print("Usage: brief <class>")
+        return
+    response = create_teaching_brief(parts[1].upper())
+    write_document(response)
+    print("Brief uploaded to Google Docs!")
+    return
 
+def handle_update(parts):
+    if len(parts) != 3:
+        print("Usage: update <class> <slide>")
+        return
+    try:
+        slide = int(parts[2])
+    except ValueError:
+        print("Slide number must be a whole number")
+        return
+    result = update_slides(parts[1].upper(), slide) 
+    if result["success"]:
+        print(f"Updated {parts[1].upper()}")
+        print(f"Previous Slide: {result['old_slide']}")
+        print(f"New slide: {result["new_slide"]}")
+        return
+    else:
+        print("Command not found")
+        return
+    return
 
-
-
-
+    
